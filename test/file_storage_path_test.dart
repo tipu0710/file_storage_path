@@ -1,6 +1,5 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:file_storage_path/file_storage_path.dart';
 
 void main() {
   const MethodChannel channel = MethodChannel('file_storage_path');

@@ -10,17 +10,21 @@ class FileStoragePath {
 
   static Future<String?> getFile(FileType fileType) async {
     if (await _getPermission()) {
-      switch (fileType) {
-        case FileType.all:
-          return await _filePath();
-        case FileType.image:
-          return await _imagesPath();
-        case FileType.video:
-          return await _videoPath();
-        case FileType.audio:
-          return await _audioPath();
-        default:
-          return null;
+      try{
+        switch (fileType) {
+          case FileType.all:
+            return await _filePath();
+          case FileType.image:
+            return await _imagesPath();
+          case FileType.video:
+            return await _videoPath();
+          case FileType.audio:
+            return await _audioPath();
+          default:
+            return null;
+        }
+      }catch (e){
+        rethrow;
       }
     }
   }

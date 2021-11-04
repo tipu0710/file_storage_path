@@ -38,9 +38,6 @@ class _MyAppState extends State<MyApp> {
         List<FileModel> list =
         imageList.map<FileModel>((json) => FileModel.fromJson(json)).toList();
 
-        setState(() {
-          imagePath = list[11].files![0];
-        });
       }else{
         print("Null response!");
       }

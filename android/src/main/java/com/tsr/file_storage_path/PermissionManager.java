@@ -30,6 +30,8 @@ public class PermissionManager implements PluginRegistry.ActivityResultListener,
     @Nullable
     private RequestPermissionsSuccessCallback successCallback;
 
+    @Nullable private ErrorCallback errorCallback;
+
     @RequiresApi(api = Build.VERSION_CODES.R)
     @Override
     public boolean onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -39,6 +41,10 @@ public class PermissionManager implements PluginRegistry.ActivityResultListener,
 
         if(resultCode == Activity.RESULT_OK){
             setResult();
+        }else{
+            errorCallback.onError(
+                    "FileStoragePath.PermissionManager",
+                    "Permission problem");
         }
 
         return true;
@@ -56,8 +62,13 @@ public class PermissionManager implements PluginRegistry.ActivityResultListener,
 
     private void setResult(){
         String result = StorageManager.getFile(activity, type);
-        Log.d(PermissionConstants.LOG_TAG, result);
-        successCallback.onSuccess(result);
+        if(result!=null){
+            successCallback.onSuccess(result);
+        }else{
+            errorCallback.onError(
+                    "FileStoragePath.PermissionManager",
+                    "Something went wrong!");
+        }
     }
 
     private boolean ongoing = false;
@@ -85,17 +96,14 @@ public class PermissionManager implements PluginRegistry.ActivityResultListener,
 
         this.type = type;
         this.successCallback = successCallback;
+        this.errorCallback = errorCallback;
         this.activity = activity;
 
         ArrayList<String> permissionsToRequest = new ArrayList<>();
         @PermissionConstants.PermissionStatus final int permissionStatus = determinePermissionStatus(activity);
-        Log.d(PermissionConstants.LOG_TAG, "Status code" +permissionStatus);
         if (permissionStatus == PermissionConstants.PERMISSION_STATUS_GRANTED) {
-            Log.d(PermissionConstants.LOG_TAG, type);
             setResult();
             return;
-        }else{
-            Log.d(PermissionConstants.LOG_TAG, "Not granted");
         }
 
         final List<String> names = new ArrayList<>();
@@ -124,14 +132,12 @@ public class PermissionManager implements PluginRegistry.ActivityResultListener,
     }
 
     @PermissionConstants.PermissionStatus
-    private int determinePermissionStatus(
-            Context context) {
+    private int determinePermissionStatus(Context context) {
 
         final List<String> names = new ArrayList<>();
         names.add(Manifest.permission.READ_EXTERNAL_STORAGE);
 
         final boolean targetsMOrHigher = context.getApplicationInfo().targetSdkVersion >= Build.VERSION_CODES.M;
-        Log.d(PermissionConstants.LOG_TAG, "SDK version: " + Build.VERSION.SDK_INT);
         if (targetsMOrHigher) {
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {

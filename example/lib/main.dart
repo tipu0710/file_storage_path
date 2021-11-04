@@ -21,6 +21,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
+    getImagesPath();
     getAudioPath();
     getVideoPath();
   }
@@ -28,15 +29,21 @@ class _MyAppState extends State<MyApp> {
   Future<String?> getImagesPath() async {
     String? imagespath;
     try {
-      imagespath = await (FileStoragePath.getFile(FileType.image) as FutureOr<String>);
-      var response = jsonDecode(imagespath);
-      var imageList = response as List;
-      List<FileModel> list =
-      imageList.map<FileModel>((json) => FileModel.fromJson(json)).toList();
+      print("Null response image!");
+      imagespath = await FileStoragePath.getFile(FileType.image);
+      print("Null response image!");
+      if(imagespath!=null){
+        var response = jsonDecode(imagespath);
+        var imageList = response as List;
+        List<FileModel> list =
+        imageList.map<FileModel>((json) => FileModel.fromJson(json)).toList();
 
-      setState(() {
-        imagePath = list[11].files![0];
-      });
+        setState(() {
+          imagePath = list[11].files![0];
+        });
+      }else{
+        print("Null response!");
+      }
     } on PlatformException {
       imagespath = 'Failed to get path';
     }
@@ -46,9 +53,13 @@ class _MyAppState extends State<MyApp> {
   Future<String?> getVideoPath() async {
     String? videoPath;
     try {
-      videoPath = await (FileStoragePath.getFile(FileType.video) as FutureOr<String>);
-      var response = jsonDecode(videoPath);
-      print(response);
+      videoPath = await (FileStoragePath.getFile(FileType.video));
+      if(videoPath!=null){
+        var response = jsonDecode(videoPath);
+        print(response);
+      }else{
+        print("Null response!");
+      }
     } on PlatformException {
       videoPath = 'Failed to get path';
     }
@@ -58,9 +69,13 @@ class _MyAppState extends State<MyApp> {
   Future<String?> getAudioPath() async {
     String? audioPath = "";
     try {
-      audioPath = await (FileStoragePath.getFile(FileType.audio) as FutureOr<String>);
-      var response = jsonDecode(audioPath);
-      print(response);
+      audioPath = await (FileStoragePath.getFile(FileType.audio));
+      if(audioPath!=null){
+        var response = jsonDecode(audioPath);
+        print(response);
+      }else{
+        print("Null response!");
+      }
     } on PlatformException {
       audioPath = 'Failed to get path';
     }
@@ -70,9 +85,13 @@ class _MyAppState extends State<MyApp> {
   Future<String?> getFilePath() async {
     String? filePath;
     try {
-      filePath = await (FileStoragePath.getFile(FileType.all) as FutureOr<String>);
-      var response = jsonDecode(filePath);
-      print(response);
+      filePath = await (FileStoragePath.getFile(FileType.all));
+      if(filePath!=null){
+        var response = jsonDecode(filePath);
+        print(response);
+      }else{
+        print("Null response!");
+      }
     } on PlatformException {
       filePath = 'Failed to get path';
     }

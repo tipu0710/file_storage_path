@@ -4,6 +4,7 @@ import 'package:file_storage_path/file_storage_path.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:flutter/services.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import 'file_model.dart';
 
@@ -27,66 +28,72 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<String?> getImagesPath() async {
-    String? imagespath;
-    try {
-      print("Null response image!");
-      imagespath = await FileStoragePath.getFile(FileType.image);
-      print("Null response image!");
-      if(imagespath!=null){
-        var response = jsonDecode(imagespath);
-        var imageList = response as List;
-        List<FileModel> list =
-        imageList.map<FileModel>((json) => FileModel.fromJson(json)).toList();
-
-      }else{
-        print("Null response!");
+    if(await getPermission()){
+      String? imagespath;
+      try {
+        print("Null response image!");
+        imagespath = await FileStoragePath.getFile(FileType.image);
+        print("Null response image!");
+        if (imagespath != null) {
+          var response = jsonDecode(imagespath);
+          var imageList = response as List;
+          List<FileModel> list = imageList
+              .map<FileModel>((json) => FileModel.fromJson(json))
+              .toList();
+        } else {
+          print("Null response!");
+        }
+      } on PlatformException {
+        imagespath = 'Failed to get path';
       }
-    } on PlatformException {
-      imagespath = 'Failed to get path';
+      return imagespath;
     }
-    return imagespath;
   }
 
   Future<String?> getVideoPath() async {
-    String? videoPath;
-    try {
-      videoPath = await (FileStoragePath.getFile(FileType.video));
-      if(videoPath!=null){
-        var response = jsonDecode(videoPath);
-        print(response);
-      }else{
-        print("Null response!");
+    if(await getPermission()){
+      String? videoPath;
+      try {
+        videoPath = await (FileStoragePath.getFile(FileType.video));
+        if (videoPath != null) {
+          var response = jsonDecode(videoPath);
+          print(response);
+        } else {
+          print("Null response!");
+        }
+      } on PlatformException {
+        videoPath = 'Failed to get path';
       }
-    } on PlatformException {
-      videoPath = 'Failed to get path';
+      return videoPath;
     }
-    return videoPath;
   }
 
   Future<String?> getAudioPath() async {
-    String? audioPath = "";
-    try {
-      audioPath = await (FileStoragePath.getFile(FileType.audio));
-      if(audioPath!=null){
-        var response = jsonDecode(audioPath);
-        print(response);
-      }else{
-        print("Null response!");
+    if(await getPermission()){
+      String? audioPath = "";
+      try {
+        audioPath = await (FileStoragePath.getFile(FileType.audio));
+        if (audioPath != null) {
+          var response = jsonDecode(audioPath);
+          print(response);
+        } else {
+          print("Null response!");
+        }
+      } on PlatformException {
+        audioPath = 'Failed to get path';
       }
-    } on PlatformException {
-      audioPath = 'Failed to get path';
+      return audioPath;
     }
-    return audioPath;
   }
 
   Future<String?> getFilePath() async {
     String? filePath;
     try {
       filePath = await (FileStoragePath.getFile(FileType.all));
-      if(filePath!=null){
+      if (filePath != null) {
         var response = jsonDecode(filePath);
         print(response);
-      }else{
+      } else {
         print("Null response!");
       }
     } on PlatformException {
@@ -108,13 +115,17 @@ class _MyAppState extends State<MyApp> {
             height: 200,
             child: imagePath != ""
                 ? Image.file(
-              File(imagePath),
-              fit: BoxFit.contain,
-            )
+                    File(imagePath),
+                    fit: BoxFit.contain,
+                  )
                 : Container(),
           ),
         ),
       ),
     );
+  }
+
+  Future<bool> getPermission() async {
+    return await Permission.storage.request() == PermissionStatus.granted;
   }
 }

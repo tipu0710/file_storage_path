@@ -147,17 +147,13 @@ public class StorageManager {
             metaData.setSize(cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Video.VideoColumns.SIZE)));
             metaData.setDisplayName(cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Video.VideoColumns.DISPLAY_NAME)));
 
+            ArrayList<MetaData> metaDataArrayList = new ArrayList<>();
             if (hasFolder) {
-
-                ArrayList<MetaData> metaDataArrayList = new ArrayList<>();
                 metaDataArrayList.addAll(mediaModelArrayList.get(position).getFiles());
                 metaDataArrayList.add(metaData);
 
                 mediaModelArrayList.get(position).setFiles(metaDataArrayList);
-
             } else {
-
-                ArrayList<MetaData> metaDataArrayList = new ArrayList<>();
                 metaDataArrayList.add(metaData);
                 MediaModel audioModel = new MediaModel();
                 audioModel.setFolder(new File(absolutePathOfImage).getParentFile().getName());
@@ -171,10 +167,8 @@ public class StorageManager {
         Type listType = new TypeToken<ArrayList<MediaModel>>() {
         }.getType();
         String json = gson.toJson(mediaModelArrayList, listType);
-        if (cursor != null) {
-            cursor.close();
-        }
-
+        cursor.close();
+        System.out.println(json);
         return json;
     }
 
